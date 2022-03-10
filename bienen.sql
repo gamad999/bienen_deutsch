@@ -21,3 +21,19 @@ FROM bienen GROUP BY year ORDER BY year DESC, arten_jahr, reg;
 -- Einsichtnahme in die Unterlagen durch die Datenerhebungsstelle.
 SELECT institutio AS institution, COUNT(DISTINCT id) AS reg, COUNT(DISTINCT species) AS arten
 FROM bienen GROUP BY institutio ORDER BY reg DESC, arten;
+
+-- Erstellung von Standortinformationsfeldern in Bundesländern, Kreisen und Gemeinden.
+ALTER TABLE bienen ADD COLUMN bundesland varchar(40);
+ALTER TABLE bienen ADD COLUMN kreis varchar(60);
+ALTER TABLE bienen ADD COLUMN gemeinde varchar(70);
+
+UPDATE bienen SET bundesland = bundeslander.name_1 
+FROM bundeslander WHERE ST_Intersects(bienen.geom, bundeslander.geom);
+
+SELECT bundesland, COUNT(DISTINCT species) AS arten
+FROM bienen GROUP BY bundesland ORDER BY arten DESC;
+
+
+
+
+
